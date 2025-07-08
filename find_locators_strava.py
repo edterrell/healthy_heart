@@ -1,3 +1,8 @@
+""" Note that this is not used with strava as it was more
+practical to program using the API. Best program for finding
+locators when scrapping the web
+"""
+
 import selenium
 print("Selenium is working in this environment!")
 
