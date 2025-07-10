@@ -1,0 +1,8 @@
+# ignore all txt and csv files
+*.csv
+*.txt
+.ipynb.checkpoints/
+*.css
+*.png
+__pycache__/
+*.pyc
