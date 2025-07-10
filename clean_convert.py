@@ -40,3 +40,18 @@ def convert_speed(row):
             return "N/A"
     else:
         return None  # for other sports
+    
+def order_columns (df):
+    # Reorder columns
+    new_order = ['id', 'name','date','sport_type',  'distance','moving_time', 'converted_speed', 
+           'total_elevation_gain', 'average_heartrate', 'max_heartrate',
+           'suffer_score', 'time','average_speed','start_date' ]
+    
+    df = df[new_order]
+    
+    # modify column names
+    df.columns = ['id', 'name', 'date', 'sport', 'distance', 'time',
+           'speed', 'elev_gain',
+           'avg_HR', 'max_HR', 'suffer_score', 'time-minutes','average_speed',
+           'start_date']
+    return df
