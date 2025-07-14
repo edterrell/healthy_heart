@@ -12,7 +12,7 @@ def cleanup (strava_df):
     - Convert elevation gain from meters to feet
     """
     # drop activities where no heartrate data was collected
-    # strava_df = strava_df.dropna(subset=['average_heartrate'])
+    strava_df = strava_df.dropna(subset=['average_heartrate']).copy()
     
     # Change to datetime and create new date column
     strava_df.start_date = pd.to_datetime(strava_df.start_date) 
