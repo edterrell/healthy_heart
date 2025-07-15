@@ -1,6 +1,8 @@
 import time
 import pandas as pd
 pd.set_option('display.precision', 1)
+#__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data']
+
 
 
 def cleanup (strava_df):
