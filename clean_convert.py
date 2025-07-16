@@ -1,7 +1,7 @@
 import time
 import pandas as pd
 pd.set_option('display.precision', 1)
-#__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data']
+__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data']
 
 
 
@@ -60,3 +60,18 @@ def order_columns (df):
            'avg_HR', 'max_HR', 'suffer_score', 'time-minutes','average_speed',
            'start_date']
     return df
+
+def process_new_data (new_activities_df, strava_df):
+    if new_activities_df.empty:
+        print("No new activities to process.")
+        return None
+
+    # proceed with combining or processing
+    new_activities_df = cleanup (new_activities_df)
+    new_activities_df['converted_speed'] = new_activities_df.apply(convert_speed, axis=1)
+    new_activities_df = order_columns(new_activities_df)
+
+    strava_df = pd.concat ([new_activities_df, strava_df])
+    #strava_df.head()
+    return strava_df
+
