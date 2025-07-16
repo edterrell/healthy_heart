@@ -64,7 +64,7 @@ def order_columns (df):
 def process_new_data (new_activities_df, strava_df):
     if new_activities_df.empty:
         print("No new activities to process.")
-        return None
+        return strava_df
 
     # proceed with combining or processing
     new_activities_df = cleanup (new_activities_df)
