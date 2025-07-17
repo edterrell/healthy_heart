@@ -1,7 +1,9 @@
 import time
+import os
+from datetime import datetime
 import pandas as pd
 pd.set_option('display.precision', 1)
-__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data']
+__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data', 'save_data']
 
 
 
@@ -74,4 +76,24 @@ def process_new_data (new_activities_df, strava_df):
     strava_df = pd.concat ([new_activities_df, strava_df])
     #strava_df.head()
     return strava_df
+
+
+def save_data (strava_df, strava_zone_df, year):
+    # Create directory with today's date, e.g., "2025-07-17"
+    today_dir = datetime.today().strftime("%Y-%m-%d")
+    dir_path = os.path.join("data", today_dir)
+    os.makedirs(dir_path, exist_ok=True)
+    
+    # Build file paths inside that folder
+    strava_path = os.path.join(dir_path, f"strava_data_{year}.pkl")
+    zone_path = os.path.join(dir_path, f"strava_zone_data_{year}.pkl")
+    
+    # Save the pickles
+    strava_df.to_pickle(strava_path)
+    strava_zone_df.to_pickle(zone_path)
+    
+    print(f"Data saved in folder: {dir_path}")
+
+# Example usage:
+# save_strava_data_daily(strava_df, strava_zone_df, 2025)
 
