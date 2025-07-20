@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import pandas as pd
 pd.set_option('display.precision', 1)
-__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data', 'save_data']
+__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data', 'save_data','get_date','get_year']
 
 
 
@@ -97,3 +97,26 @@ def save_data (strava_df, strava_zone_df, year):
 # Example usage:
 # save_strava_data_daily(strava_df, strava_zone_df, 2025)
 
+def get_date(prompt, default=None):
+    while True:
+        user_input = input(f"{prompt} [{default}]: ").strip()
+        if user_input == "":
+            return default
+        if user_input == "empty":
+            return None
+        try:
+            parsed_date = datetime.strptime(user_input, '%Y-%m-%d')
+            return parsed_date.strftime('%Y-%m-%d')
+        except ValueError:
+            print("❌ Invalid date format. Use YYYY-MM-DD.")
+
+def get_year(prompt, default=None):
+    while True:
+        user_input = input(f"{prompt} [{default}]: ").strip()
+        if user_input == "":
+            return default
+        try:
+            parsed_date = datetime.strptime(user_input, '%Y')
+            return parsed_date.strftime('%Y')
+        except ValueError:
+            print("❌ Invalid year format. Use YYYY.")
