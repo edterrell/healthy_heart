@@ -18,9 +18,10 @@ def get_zones_for_id(activity_id, access_token):
         print(response.text)
     # create time_in_zones series
     zone_series  = pd.DataFrame(zones[0]).iloc[:,1]
+    
     time_in_zones = zone_series.apply(lambda z: z['time']/60)
     time_in_zones.index = ['Zone1', 'Zone2', 'Zone3', 'Zone4', 'Zone5']
-    time.sleep(1.5)
+    time.sleep(.6)
     return (time_in_zones)
 
 def build_week_summary (strava_zone_df):
