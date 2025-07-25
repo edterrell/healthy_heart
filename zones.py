@@ -40,7 +40,7 @@ def build_week_summary (strava_zone_df):
             'weekly_suffer_score', and 'week' (formatted string label)
     """
     week_summary = (strava_zone_df
-        .groupby('week_start')[['weekly_intense','weekly_moderate','weekly_suffer_score']]
+        .groupby('week_start')[['weekly_intense','weekly_moderate','weekly_suffer_score','weekly_HR-value']]
         .max()
         .reset_index()
     )
