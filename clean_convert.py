@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 import pandas as pd
 pd.set_option('display.precision', 1)
-__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data', 'save_data','get_date','get_year']
+__all__ = ['cleanup', 'convert_speed', 'order_columns', 'process_new_data', 'save_data','get_date','get_year','remove_other_backups']
 
 
 
@@ -17,7 +17,9 @@ def cleanup (strava_df):
     """
     # drop activities where no heartrate data was collected
     strava_df = strava_df.dropna(subset=['average_heartrate']).copy()
-    
+    if strava_df.empty:
+        print("No activities to process.")
+        return strava_df
     # Change to datetime and create new date column
     strava_df.start_date = pd.to_datetime(strava_df.start_date) 
     strava_df['date'] = strava_df.start_date.dt.date
@@ -31,11 +33,13 @@ def cleanup (strava_df):
     strava_df['moving_time'] = strava_df['moving_time'].apply(lambda td: f"{int(td.total_seconds() // 3600)}:{int((td.total_seconds() % 3600) // 60):02}")
     # Change to feet
     strava_df.total_elevation_gain = strava_df.total_elevation_gain*3.28084
-    
+
     return strava_df
 
 def convert_speed(row):
     if row['sport_type'] == 'Ride':
+        print (row['average_speed'])
+        print('we are in convert_speed')
         return row['average_speed'] * 2.23694  # m/s to mph
     elif row['sport_type'] == 'Run':
         if row['average_speed'] > 0:
@@ -70,6 +74,9 @@ def process_new_data (new_activities_df, strava_df):
 
     # proceed with combining or processing
     new_activities_df = cleanup (new_activities_df)
+    if new_activities_df.empty:
+        print("No new activities found.")
+        return 
     new_activities_df['converted_speed'] = new_activities_df.apply(convert_speed, axis=1)
     new_activities_df = order_columns(new_activities_df)
 
@@ -120,3 +127,52 @@ def get_year(prompt, default=None):
             return parsed_date.strftime('%Y')
         except ValueError:
             print("❌ Invalid year format. Use YYYY.")
+            
+def remove_backups(base_dir="data", keep_subdirs=None, verbose=True):
+    """
+    Remove .pkl files and directories that are NOT listed in keep_subdirs 
+    
+    These files will be retained:
+      - Any .pkl file in the data directory
+
+    Parameters:
+        base_dir (str): Path to the data directory relative to current working dir
+        keep_subdirs (set): Subdirectory names to preserve, e.g. {"2025-07-27", "2025-07-29"}
+        verbose (bool): If True, prints each deletion and directory removal
+    """
+    if keep_subdirs is None:
+        keep_subdirs = set()
+
+    for root, dirs, files in os.walk(base_dir):
+        rel_path = os.path.relpath(root, base_dir)
+
+        for file in files:
+            if not file.endswith(".pkl"):
+                continue
+
+            full_path = os.path.join(root, file)
+
+            # 1. Keep all .pkl files directly in the base directory
+            if rel_path == ".":
+                continue
+
+            # 2. Keep any .pkl file with '2024' in the filename (Optional)
+            if "2024" in file:
+                continue
+
+            # 3. Keep files only in explicitly allowed subdirectories
+            if rel_path in keep_subdirs:
+                continue
+
+            # Else: delete it
+            if verbose:
+                print(f"Deleting: {full_path}")
+            os.remove(full_path)
+
+    # Remove empty folders
+    for root, dirs, files in os.walk(base_dir, topdown=False):
+        if not dirs and not files and os.path.relpath(root, base_dir) != ".":
+            if verbose:
+                print(f"Removing empty directory: {root}")
+            os.rmdir(root)
+           
