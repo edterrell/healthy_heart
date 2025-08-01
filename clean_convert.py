@@ -38,8 +38,6 @@ def cleanup (strava_df):
 
 def convert_speed(row):
     if row['sport_type'] == 'Ride':
-        print (row['average_speed'])
-        print('we are in convert_speed')
         return row['average_speed'] * 2.23694  # m/s to mph
     elif row['sport_type'] == 'Run':
         if row['average_speed'] > 0:
@@ -76,7 +74,7 @@ def process_new_data (new_activities_df, strava_df):
     new_activities_df = cleanup (new_activities_df)
     if new_activities_df.empty:
         print("No new activities found.")
-        return 
+        return strava_df
     new_activities_df['converted_speed'] = new_activities_df.apply(convert_speed, axis=1)
     new_activities_df = order_columns(new_activities_df)
 
